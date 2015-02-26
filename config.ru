@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
+require 'rack/deflater'
 require 'pathname'
 
 class App < Sinatra::Base
@@ -53,4 +54,5 @@ class App < Sinatra::Base
   end
 end
 
+use Rack::Deflater
 run App
