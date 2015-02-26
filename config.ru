@@ -8,7 +8,7 @@ class App < Sinatra::Base
   CONTENT_TYPE = 'text/plain'.freeze
   TEXT_HEADERS = {
     'Access-Control-Allow-Origin'.freeze => '*'.freeze,
-    'Content-Type'.freeze => CONTENT_TYPE
+    'Content-Type'.freeze => "#{CONTENT_TYPE}; charset=utf-8".freeze
   }.freeze
   PATH = Pathname.new(__FILE__).join('../generated'.freeze).freeze
   STATUS = 'alive'.freeze
