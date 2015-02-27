@@ -7,12 +7,12 @@ require 'pathname'
 
 class App < Sinatra::Base
   CONTENT_TYPE = 'text/plain'.freeze
-  TEXT_HEADERS = {
+  HEADERS = {
     'Access-Control-Allow-Origin'.freeze => '*'.freeze,
     'Content-Type'.freeze => "#{CONTENT_TYPE}; charset=utf-8".freeze
   }.freeze
-  CACHEABLE_TEXT_HEADERS = TEXT_HEADERS.merge({
-    'Cache-Control' => 'public, max-age=31536000'
+  CACHEABLE_HEADERS = HEADERS.merge({
+    'Cache-Control'.freeze => 'public, max-age=31536000'.freeze
   })
   PATH = Pathname.new(__FILE__).join('../generated'.freeze).freeze
   STATUS = 'alive'.freeze
@@ -30,15 +30,15 @@ class App < Sinatra::Base
   end
 
   before do
-    halt 406, TEXT_HEADERS, '' unless request.accept?(CONTENT_TYPE)
+    halt 406, HEADERS, '' unless request.accept?(CONTENT_TYPE)
   end
 
   get '/status' do
-    return 200, TEXT_HEADERS, STATUS
+    return 200, HEADERS, STATUS
   end
 
   get '/versions' do
-    return 200, TEXT_HEADERS, known_versions.join("\n")
+    return 200, HEADERS, known_versions.join("\n")
   end
 
   get %r{/(v[^/]+)/(v.+)} do |source, target|
@@ -47,14 +47,14 @@ class App < Sinatra::Base
 
     if source_path.exist?  && target_path.exist?
       diff = `diff -Nr -U 1000 -x '*.png' #{source_path} #{target_path}`
-      return 200, CACHEABLE_TEXT_HEADERS, diff
+      return 200, CACHEABLE_HEADERS, diff
     else
-      halt 404, TEXT_HEADERS, ''
+      halt 404, HEADERS, ''
     end
   end
 
   not_found do
-    halt 404, TEXT_HEADERS, ''
+    halt 404, HEADERS, ''
   end
 end
 
