@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
+require 'rack/cache'
 require 'rack/deflater'
 require 'pathname'
 
@@ -10,6 +11,9 @@ class App < Sinatra::Base
     'Access-Control-Allow-Origin'.freeze => '*'.freeze,
     'Content-Type'.freeze => "#{CONTENT_TYPE}; charset=utf-8".freeze
   }.freeze
+  CACHEABLE_TEXT_HEADERS = TEXT_HEADERS.merge({
+    'Cache-Control' => 'public, max-age=31536000'
+  })
   PATH = Pathname.new(__FILE__).join('../generated'.freeze).freeze
   STATUS = 'alive'.freeze
 
@@ -43,7 +47,7 @@ class App < Sinatra::Base
 
     if source_path.exist?  && target_path.exist?
       diff = `diff -Nr -U 1000 -x '*.png' #{source_path} #{target_path}`
-      return 200, TEXT_HEADERS, diff
+      return 200, CACHEABLE_TEXT_HEADERS, diff
     else
       halt 404, TEXT_HEADERS, ''
     end
@@ -54,5 +58,6 @@ class App < Sinatra::Base
   end
 end
 
+use Rack::Cache
 use Rack::Deflater
 run App

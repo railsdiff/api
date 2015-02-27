@@ -4,6 +4,8 @@ GEM
     puma (2.11.1)
       rack (>= 1.1, < 2.0)
     rack (1.5.2)
+    rack-cache (1.2)
+      rack (>= 0.4)
     rack-protection (1.5.2)
       rack
     sinatra (1.4.5)
@@ -17,4 +19,5 @@ PLATFORMS
 
 DEPENDENCIES
   puma
+  rack-cache
   sinatra
