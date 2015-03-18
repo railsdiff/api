@@ -2,8 +2,20 @@ require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
 require 'rack/cache'
+require 'rack/cache/key'
 require 'rack/deflater'
 require 'pathname'
+
+class QuerylessCacheKey < Rack::Cache::Key
+  private
+
+  # Internal: This API does not consider query string parameters, so ignore
+  # them when generating cache keys.
+  #
+  def query_string
+    nil
+  end
+end
 
 class App < Sinatra::Base
   CONTENT_TYPE = 'text/plain'.freeze
@@ -58,6 +70,6 @@ class App < Sinatra::Base
   end
 end
 
-use Rack::Cache
+use Rack::Cache, { :cache_key => QuerylessCacheKey }
 use Rack::Deflater
 run App
