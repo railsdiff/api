@@ -33,9 +33,9 @@ require "rails/cli"
   File.write(t.name, generator)
 end
 
-rule(/tmp\/rails\/.*/ => ['tmp/rails/rails', 'tmp/rails/generator']) do |t|
+rule(%r{tmp/rails/.*} => ['tmp/rails/rails', 'tmp/rails/generator']) do |t|
   cd t.source, verbose: false do
-    tag = t.name.match(/([^\/]+)$/)[0]
+    tag = t.name.pathmap('%f')
     sh "git reset --hard #{tag} > /dev/null 2>&1", verbose: false
   end
   cp_r t.source, t.name, verbose: false
@@ -44,8 +44,8 @@ end
 
 directory 'generated'
 
-rule(/generated\/.*/ => ['generated']) do |t|
-  source = t.name.gsub 'generated', 'tmp/rails'
+rule(%r{generated/.*} => ['generated']) do |t|
+  source = t.name.pathmap('%{generated,tmp/rails}p')
   Rake::Task[source].invoke # only invoke this task if we need generated app
 
   puts 'Generating: %s' % t.name
