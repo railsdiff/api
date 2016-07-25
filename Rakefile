@@ -1,5 +1,7 @@
 require 'json'
 
+VERBOSE = ENV.key?('VERBOSE')
+
 task 'default' => 'generate'
 
 desc 'Generate diff, json, & sitemap files'
@@ -13,14 +15,14 @@ directory 'tmp/rails'
 
 file 'tmp/rails/rails' => 'tmp/rails' do |t|
   puts 'Cloning Rails repo'
-  sh "git clone https://github.com/rails/rails.git #{t.name} > /dev/null 2>&1", verbose: false
+  sh "git clone https://github.com/rails/rails.git #{t.name} > /dev/null 2>&1", verbose: VERBOSE
 end
 
 task 'update_rails_repo' => 'tmp/rails/rails' do |t|
   puts 'Updating Rails repo'
 
-  cd t.prerequisites.first, verbose: false do
-    sh "git fetch origin --tags > /dev/null", verbose: false
+  cd t.prerequisites.first, verbose: VERBOSE do
+    sh "git fetch origin --tags > /dev/null", verbose: VERBOSE
   end
 end
 
@@ -34,12 +36,12 @@ require "rails/cli"
 end
 
 rule(%r{tmp/rails/.*} => ['tmp/rails/rails', 'tmp/rails/generator']) do |t|
-  cd t.source, verbose: false do
+  cd t.source, verbose: VERBOSE do
     tag = t.name.pathmap('%f')
-    sh "git reset --hard #{tag} > /dev/null 2>&1", verbose: false
+    sh "git reset --hard #{tag} > /dev/null 2>&1", verbose: VERBOSE
   end
-  cp_r t.source, t.name, verbose: false
-  cp 'tmp/rails/generator', t.name, verbose: false
+  cp_r t.source, t.name, verbose: VERBOSE
+  cp 'tmp/rails/generator', t.name, verbose: VERBOSE
 end
 
 directory 'generated'
@@ -52,14 +54,14 @@ rule(%r{generated/.*} => ['generated']) do |t|
 
   hidden_glob = "#{t.name}/railsdiff/.??*"
 
-  rm_rf t.name, verbose: false if Dir.exists?(t.name)
-  sh generator_command(source, t.name), verbose: false
+  rm_rf t.name, verbose: VERBOSE if Dir.exists?(t.name)
+  sh generator_command(source, t.name), verbose: VERBOSE
   sed_commands(t.name).each do |expression, file_path|
-    sh %{sed -E -i '' "#{expression}" #{file_path}}, verbose: false
+    sh %{sed -E -i '' "#{expression}" #{file_path}}, verbose: VERBOSE
   end
-  sh "mv #{t.name}/railsdiff/* #{t.name}/.", verbose: false
+  sh "mv #{t.name}/railsdiff/* #{t.name}/.", verbose: VERBOSE
   %x{test -e #{hidden_glob} && mv #{hidden_glob} #{t.name}/.}
-  rm_rf source, verbose: false
+  rm_rf source, verbose: VERBOSE
 end
 
 def all_included_tags
@@ -69,7 +71,7 @@ end
 def all_tags
   @all_tags ||= begin
     result = nil
-    cd 'tmp/rails/rails', verbose: false do
+    cd 'tmp/rails/rails', verbose: VERBOSE do
       result = %x{git tag -l "v2.3*" "v3*" "v4*" "v5*"}.split
     end
     result.sort { |a, b| version(a) <=> version(b) }
