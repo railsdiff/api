@@ -60,6 +60,7 @@ rule(%r{generated/.*} => ['generated']) do |t|
     sh %{sed -E -i '' "#{expression}" #{file_path}}, verbose: VERBOSE
   end
   sh "mv #{t.name}/railsdiff/* #{t.name}/.", verbose: VERBOSE
+  %x{test -d "#{t.name}/railsdiff/.git" && rm -rf "#{t.name}/railsdiff/.git"}
   %x{test -e #{hidden_glob} && mv #{hidden_glob} #{t.name}/.}
   rm_rf source, verbose: VERBOSE
 end
