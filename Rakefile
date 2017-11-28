@@ -104,16 +104,20 @@ end
 def sed_commands base_path
   [
     [
+      "s/.*/your-encrypted-credentials/",
+      "#{base_path}/railsdiff/config/credentials.yml.enc",
+    ],
+    [
       "s/'.*'/'your-secret-token'/",
       "#{base_path}/railsdiff/config/initializers/cookie_verification_secret.rb",
     ],
     [
-      "s/'.{20,}'/'your-secret-token'/",
-      "#{base_path}/railsdiff/config/initializers/session_store.rb",
-    ],
-    [
       "s/'.*'/'your-secret-token'/",
       "#{base_path}/railsdiff/config/initializers/secret_token.rb",
+    ],
+    [
+      "s/'.{20,}'/'your-secret-token'/",
+      "#{base_path}/railsdiff/config/initializers/session_store.rb",
     ],
     [
       's/(secret_key_base:[[:space:]])[^<].*$/\1your-secret-token/',
