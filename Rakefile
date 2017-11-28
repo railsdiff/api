@@ -52,16 +52,17 @@ rule(%r{generated/.*} => ['generated']) do |t|
 
   puts 'Generating: %s' % t.name
 
-  hidden_glob = "#{t.name}/railsdiff/.??*"
-
   rm_rf t.name, verbose: VERBOSE if Dir.exists?(t.name)
   sh generator_command(source, t.name), verbose: VERBOSE
   sed_commands(t.name).each do |expression, file_path|
     sh %{sed -E -i '' "#{expression}" #{file_path}}, verbose: VERBOSE
   end
-  sh "mv #{t.name}/railsdiff/* #{t.name}/.", verbose: VERBOSE
   %x{test -d "#{t.name}/railsdiff/.git" && rm -rf "#{t.name}/railsdiff/.git"}
-  %x{test -e #{hidden_glob} && mv #{hidden_glob} #{t.name}/.}
+  sh "mv #{t.name}/railsdiff/* #{t.name}/.", verbose: VERBOSE
+
+  hidden_glob = "#{t.name}/railsdiff/.??*"
+  %x{test -n "$(ls #{hidden_glob})" && mv #{hidden_glob} #{t.name}/.}
+
   rm_rf source, verbose: VERBOSE
 end
 
