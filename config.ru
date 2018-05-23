@@ -29,8 +29,8 @@ class App < Sinatra::Base
   PATH = Pathname.new(__FILE__).join('../generated'.freeze).freeze
   STATUS = 'alive'.freeze
 
-  def app_path tag
-    PATH.join(tag)
+  def app_path(*tag)
+    PATH.join(*tag)
   end
 
   def generated_apps
@@ -51,6 +51,18 @@ class App < Sinatra::Base
 
   get '/versions' do
     return 200, HEADERS, known_versions.join("\n")
+  end
+
+  get %r{/(v[^/]+)/(v[^/]+)/(.+)} do |source, target, path|
+    source_path = app_path(source, path)
+    target_path = app_path(target, path)
+
+    if source_path.exist?  && target_path.exist?
+      diff = `diff -Nr -U 1000 -x '*.png' #{source_path} #{target_path}`
+      return 200, CACHEABLE_HEADERS, diff
+    else
+      halt 404, HEADERS, ''
+    end
   end
 
   get %r{/(v[^/]+)/(v.+)} do |source, target|
