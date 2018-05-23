@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby ENV["RUBY_VERSION"] || "2.3.0"
+ruby ENV["RUBY_VERSION"] || "2.5.0"
 
 gem "puma"
 gem "sinatra"
