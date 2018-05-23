@@ -53,23 +53,16 @@ class App < Sinatra::Base
     return 200, HEADERS, known_versions.join("\n")
   end
 
-  get %r{/(v[^/]+)/(v[^/]+)/(.+)} do |source, target, path|
-    source_path = app_path(source, path)
-    target_path = app_path(target, path)
+  get %r{/(v[^/]+)/(v[^/]+)(?:/(.+))?} do |source, target, path|
+    file_path = path || ''
 
-    if source_path.exist?  && target_path.exist?
-      diff = `diff -Nr -U 1000 -x '*.png' #{source_path} #{target_path}`
-      return 200, CACHEABLE_HEADERS, diff
-    else
-      halt 404, HEADERS, ''
-    end
-  end
+    source_app_path = app_path(source)
+    source_path = app_path(source, file_path)
 
-  get %r{/(v[^/]+)/(v.+)} do |source, target|
-    source_path = app_path(source)
-    target_path = app_path(target)
+    target_app_path = app_path(target)
+    target_path = app_path(target, file_path)
 
-    if source_path.exist?  && target_path.exist?
+    if source_app_path.exist? && target_app_path.exist? && source_path.exist? || target_path.exist?
       diff = `diff -Nr -U 1000 -x '*.png' #{source_path} #{target_path}`
       return 200, CACHEABLE_HEADERS, diff
     else
