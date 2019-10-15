@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
@@ -18,16 +20,16 @@ class QuerylessCacheKey < Rack::Cache::Key
 end
 
 class App < Sinatra::Base
-  CONTENT_TYPE = 'text/plain'.freeze
+  CONTENT_TYPE = 'text/plain'
   HEADERS = {
-    'Access-Control-Allow-Origin'.freeze => '*'.freeze,
-    'Content-Type'.freeze => "#{CONTENT_TYPE}; charset=utf-8".freeze
+    'Access-Control-Allow-Origin' => '*',
+    'Content-Type' => "#{CONTENT_TYPE}; charset=utf-8"
   }.freeze
   CACHEABLE_HEADERS = HEADERS.merge({
-    'Cache-Control'.freeze => 'public, max-age=31536000'.freeze
+    'Cache-Control' => 'public, max-age=31536000'
   })
-  PATH = Pathname.new(__FILE__).join('../generated'.freeze).freeze
-  STATUS = 'alive'.freeze
+  PATH = Pathname.new(__FILE__).join('../generated').freeze
+  STATUS = 'alive'
 
   def app_path(*tag)
     PATH.join(*tag)
