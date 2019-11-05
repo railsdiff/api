@@ -84,7 +84,7 @@ def generator_command source_path, dest_path
   if source_path.split(/\//).last =~ /v2.3/
     "ruby #{source_path}/railties/bin/rails #{dest_path}/railsdiff > /dev/null"
   else
-    "ruby #{source_path}/generator new #{dest_path}/railsdiff --skip-bundle > /dev/null"
+    "ruby #{source_path}/generator new #{dest_path}/railsdiff --skip-bundle --skip-webpack-install > /dev/null"
   end
 end
 
