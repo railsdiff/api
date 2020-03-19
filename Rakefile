@@ -11,6 +11,11 @@ task 'generate' => 'update_rails_repo' do |t|
   end
 end
 
+desc 'List all tags'
+task 'tags' => 'update_rails_repo' do |t|
+  puts all_included_tags.to_a
+end
+
 directory 'tmp/rails'
 
 file 'tmp/rails/rails' => 'tmp/rails' do |t|
@@ -127,7 +132,8 @@ def sed_commands base_path
 end
 
 def skip_version? version
-  %w[2.3.9.pre 2.3.2.1 2.3.3.1].include?(version.to_s)
+  %w[2.3.9.pre 2.3.2.1 2.3.3.1].include?(version.to_s) ||
+    version.to_s.include?('github')
 end
 
 def version tag
