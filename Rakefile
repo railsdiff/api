@@ -33,7 +33,9 @@ end
 
 file 'tmp/rails/generator' => 'tmp/rails' do |t|
   generator = <<-GEN
+activesupport_path = File.expand_path('../activesupport/lib', __FILE__)
 railties_path = File.expand_path('../railties/lib', __FILE__)
+$:.unshift(activesupport_path)
 $:.unshift(railties_path)
 require "rails/cli"
   GEN
